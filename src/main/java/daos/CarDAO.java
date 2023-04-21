@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.cj.protocol.Resultset;
 import com.mysql.cj.xdevapi.Statement;
 
 import models.CarDTO;
@@ -38,14 +39,14 @@ public class CarDAO implements InterfaceCarDAO {
         Connection connection = ConnectionFactory.getConnection();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM Cars");
+            ResultSet rs = ps.executeQuery();
             List<CarDTO> list = new ArrayList<>();
 
             while (rs.next()) {
-                User user = extractCarFromResultSet(rs);
-                users.add(user);
+                CarDTO car = extractCarFromResultSet(rs);
+                list.add(car);
             }
-
-            return users;
+            return list;
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -55,20 +56,57 @@ public class CarDAO implements InterfaceCarDAO {
 
     @Override
     public CarDTO update(CarDTO dto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        Connection connection = ConnectionFactory.getConnection();
+        try {
+            PreparedStatement ps = connection
+                    .prepareStatement("UPDATE Cars SET make=?, model=?, color=?, year=?, vin=? WHERE id=?");
+            ps.setInt(6, dto.getId());
+            ps.setString(1, dto.getMake());
+            ps.setString(2, dto.getModel());
+            ps.setString(3, dto.getColor());
+            ps.setInt(4, dto.getYear());
+            ps.setString(5, dto.getVin());
+            ps.executeUpdate();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return dto;
     }
 
     @Override
     public CarDTO create(CarDTO dto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+        Connection connection = ConnectionFactory.getConnection();
+        try {
+            PreparedStatement ps = connection
+                    .prepareStatement("INSERT INTO Cars values (?, ?, ?, ?, ?, ?)");
+            ps.setInt(1, dto.getId());
+            ps.setString(2, dto.getMake());
+            ps.setString(3, dto.getModel());
+            ps.setInt(4, dto.getYear());
+            ps.setString(5, dto.getColor());
+            ps.setString(6, dto.getVin());
+            ps.executeUpdate();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return dto;
     }
 
     @Override
     public void delete(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        Connection connection = ConnectionFactory.getConnection();
+        try {
+            PreparedStatement ps = connection
+                    .prepareStatement("DELETE FROM Cars WHERE id=?");
+            ps.setInt(1, id);
+
+            ps.executeUpdate();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private CarDTO extractCarFromResultSet(ResultSet rs) throws SQLException {

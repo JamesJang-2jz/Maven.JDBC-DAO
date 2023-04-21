@@ -1,6 +1,9 @@
 package models;
 
 public class CarDTO implements InterfaceCarDTO {
+    // DTO is Data transfer Object. it's an object
+    // a simple mapping to the table, every column in
+    // the table would be a member variable in the class
 
     Integer id;
     String make;
